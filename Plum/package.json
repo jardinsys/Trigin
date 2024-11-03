@@ -1,0 +1,19 @@
+{
+  "name": "prune",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "keywords": [],
+  "author": "jardinsys",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "mongoose": "^8.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0"
+  }
+}
