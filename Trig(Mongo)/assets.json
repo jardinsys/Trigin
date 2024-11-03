@@ -1,0 +1,11 @@
+{
+    "trig_happy_color": "#F7BC00",
+    "trig_default_color": "#F99301",
+    "trig_caution_color": "#F56300",
+    "trig_warning_color": "#A10838",
+    "trig_dead_color": "#541743", 
+    
+    "trig_sus_thumbnail": "https://media.discordapp.net/attachments/1189651420933271633/1191811589821702234/image0.png?ex=65a6cc09&is=65945709&hm=5c1cb3bda5170d52e8e65348c52562a15dbe5299b693bf32d5ca4f800249373b&=&format=webp&quality=lossless&width=415&height=415",
+    "trig_happyhug_thumbnail":"https://media.discordapp.net/attachments/1189651420933271633/1191828021833895976/image0.png?ex=65a6db57&is=65946657&hm=5fb8b58802e7cfc23ffdc47a55b16d6abfc71487cebc7b5e62725e23dad8706c&=&format=webp&quality=lossless&width=415&height=415",
+    "trig_noting_thumbnail": "https://media.discordapp.net/attachments/1189651420933271633/1191872733018083338/image0.png?ex=65a704fb&is=65948ffb&hm=b9dc93648485da2c63b148409988e3a55c7a287c103dd40736844dc54d0f72ba&=&format=webp&quality=lossless&width=415&height=415"
+}
