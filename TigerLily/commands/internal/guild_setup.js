@@ -1,4 +1,11 @@
 //On welcome in server
+
+/*guildProfile = await new Guild({
+        _id: mongoose.Types.ObjectId(),
+        guildId: interaction.guild.id,
+        guildSponserCount: 0,
+      });*/
+      
 //Ask what channel to complete set up
 //Ask what role(s) are admins (only ADMINIISTRATOR can edit)
 //Ask what member(s) are admins (only ADMINIISTRATOR can edit)

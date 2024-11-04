@@ -5,10 +5,11 @@ const memberSchema = new Schema({
     memberId: String,
     memberDisplayName: String,
     memberPronouns: String,
-    memberPremium: Boolean,
-    memberPremiumTimeStamp: Number,
+    memberPremiumCount: Number,
     memberPremiumEndTimeStamp: Number,
+    memberAutoPremium: Boolean,
     memberSponsorsToGive: Number,
+    memberAutoSponsors: [Schema.Types.ObjectId],
     memberRecentMessages: [Schema.Types.ObjectId],
 
     //Trigger
@@ -23,6 +24,7 @@ const memberSchema = new Schema({
     memberTriggerFooterIcon: String, // $$
     memberTriggerHeader: String, // $$
     memberTriggerHeaderIcon: String, // $$
+    memberTriggerGuildSent:[String], //$$
 
     //Intro
     memberIntroDisplayBanner: String, // $$
@@ -35,7 +37,9 @@ const memberSchema = new Schema({
     memberIntroHeader: String, // $$
     memberIntroHeaderIcon: String, // $$
     memberIntroFieldTitles: [String], // $$
-    memberIntroFieldDescs: [String] // $$
+    memberIntroFieldDescs: [String], // $$
+    memberIntroGuildSent:[String] //$$
+
 });
 
 module.exports = mainDB.model("Member", memberSchema, "Members");

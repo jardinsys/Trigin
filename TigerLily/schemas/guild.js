@@ -5,9 +5,13 @@ const guildSchema = new Schema({
     guildId: { type: String, required: true },
     guildDisplayName: String,
     guildSponserCount: Number,
-    guildSponserTimeStamp:  [Number],
+    guildSponserEndTimeStamp: Number,
     guildAdminRoleIds:[String],
     guildAdminMemberIds: [String],
+    guildMemberTriggerChannel: String,
+    guildMemberIntroChannel: String,
+    guildTriggerMessageID:String,
+    guildIntroMessageID: String,
 
     //Trigger
     guildTriggerDisplayBanner: String, // $$
