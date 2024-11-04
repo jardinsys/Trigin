@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { mainDB } = require("../bot.js");
 const memberTriggerGroupSchema = new Schema({
     _id: Schema.Types.ObjectId,
     memberId: String,
@@ -10,4 +11,4 @@ const memberTriggerGroupSchema = new Schema({
     memberTriggerGroupBullet: String,
 });
 
-module.exports = model("MemberTriggerGroup", memberTriggerGroupSchema, "MemberTriggerGroups");
+module.exports = mainDB.model("MemberTriggerGroup", memberTriggerGroupSchema, "MemberTriggerGroups");

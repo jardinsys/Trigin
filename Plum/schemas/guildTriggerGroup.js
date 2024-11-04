@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { mainDB } = require("../bot.js");
 const guildTriggerGroupSchema = new Schema({
     _id: Schema.Types.ObjectId,
     guildId: String,
@@ -10,4 +11,4 @@ const guildTriggerGroupSchema = new Schema({
     guildTriggerGroupBullet: String
 });
 
-module.exports = model("GuildTriggerGroup", guildTriggerGroupSchema, "GuildTriggerGroups");
+module.exports = mainDB.model("GuildTriggerGroup", guildTriggerGroupSchema, "GuildTriggerGroups");

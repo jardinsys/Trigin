@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { mainDB } = require("../bot.js");
 const customTriggerSchema = new Schema({
     _id: Schema.Types.ObjectId,
     memberId: String,
@@ -9,4 +10,4 @@ const customTriggerSchema = new Schema({
 });
 
 
-module.exports = model("CustomTrigger", customTriggerSchema, "CustomTriggers");
+module.exports = mainDB.model("CustomTrigger", customTriggerSchema, "CustomTriggers");

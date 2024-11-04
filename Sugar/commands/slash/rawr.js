@@ -5,6 +5,6 @@ module.exports = {
 		.setName('rawr')
 		.setDescription('RAWR! (this is like a ping)'),
 	async execute(interaction) {
-		await interaction.reply('RAWR!');
+		await interaction.reply('Nyaa~!');
 	},
 };

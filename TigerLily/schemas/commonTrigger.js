@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { sucreDB } = require("../bot.js")
 const commonTriggerSchema = new Schema({
     _id: Schema.Types.ObjectId,
     triggerName: String,
@@ -6,4 +7,4 @@ const commonTriggerSchema = new Schema({
     triggerHelp: String
 });
 
-module.exports = model("CommonTrigger", commonTriggerSchema, "CommonTriggers");
+module.exports = sucreDB.model("CommonTrigger", commonTriggerSchema, "CommonTriggers");

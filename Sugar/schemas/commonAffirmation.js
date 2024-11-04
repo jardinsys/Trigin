@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { sucreDB } = require("../bot.js");
 const affirmationSchema = new Schema({
     _id: Schema.Types.ObjectId,
     affirmationId: Number,
@@ -7,4 +8,4 @@ const affirmationSchema = new Schema({
     affirmationThumbnail: String
 });
 
-module.exports = model("Affirmation", affirmationSchema, "Affirmations");
+module.exports = sucreDB.model("CommonAffirmation", commonAffirmationSchema, "CommonAffirmations");

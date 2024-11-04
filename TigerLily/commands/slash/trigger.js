@@ -1,5 +1,5 @@
 //triggerdisplay (display specific trigger)
-//          - guildtrigerlistdisplay
+//          - guildtrigerdisplay
 
 //triggerlistdisplay (display list of triggers)
 //          - guildtriggerlistdisplay

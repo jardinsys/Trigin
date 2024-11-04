@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { mainDB } = require("../bot.js");
 const memberSchema = new Schema({
     _id: Schema.Types.ObjectId,
     memberId: String,
@@ -37,4 +38,4 @@ const memberSchema = new Schema({
     memberIntroFieldDescs: [String] // $$
 });
 
-module.exports = model("Member", memberSchema, "Members");
+module.exports = mainDB.model("Member", memberSchema, "Members");

@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { mainDB } = require("../bot.js")
 const guildSchema = new Schema({
     _id: Schema.Types.ObjectId,
     guildId: { type: String, required: true },
@@ -35,4 +36,4 @@ const guildSchema = new Schema({
     guildIntroFieldTitle: String // $$
 });
 
-module.exports = model("Guild", guildSchema, "Guilds");
+module.exports = mainDB.model("Guild", guildSchema, "Guilds");

@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { mainDB } = require("../bot.js");
 const messageSchema = new Schema({
     _id: Schema.Types.ObjectId,
     messageForGuild: Boolean,
@@ -13,4 +14,4 @@ const messageSchema = new Schema({
     messageFooterIcon: String,
 });
 
-module.exports = model("Message", messageSchema, "Messages");
+module.exports = mainDB.model("Message", messageSchema, "Messages");
