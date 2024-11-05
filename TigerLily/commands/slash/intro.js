@@ -295,7 +295,7 @@ module.exports = {
 					.setValue(memberProfile.memberIntroDisplayColor);
 				const descInput = TextInputBuilder()
 					.setCustomId("descInput")
-					.setLabel("What color do you want your intro to be?")
+					.setLabel("What is your intro?")
 					.setStyle(TextInputStyle.Paragraph)
 					.setValue(memberProfile.memberIntroDescription);
 
@@ -307,6 +307,54 @@ module.exports = {
 				);
 				intromodal.addComponents(nonPremiumMemberActions);
 			} else {
+				const displayNameInput = TextInputBuilder()
+					.setCustomId("displayNameInput")
+					.setLabel("What is your name?")
+					.setStyle(TextInputStyle.Short)
+					.setValue(memberProfile.memberDisplayName);
+				const pronounsInput = TextInputBuilder()
+					.setCustomId("pronounsInput")
+					.setLabel("What are your pronouns?")
+					.setStyle(TextInputStyle.Short)
+					.setValue(memberProfile.memberPronouns);
+				const colorInput = TextInputBuilder()
+					.setCustomId("colorInput")
+					.setLabel("What color do you want your intro to be?")
+					.setStyle(TextInputStyle.Short)
+					.setValue(memberProfile.memberIntroDisplayColor);
+				const titleInput = TextInputBuilder()
+					.setCustomId("titleInput")
+					.setLabel("What do you want your title to be?")
+					.setStyle(TextInputStyle.Short)
+					.setValue(memberProfile.memberIntroCustomTitle);
+				const descInput = TextInputBuilder()
+					.setCustomId("descInput")
+					.setLabel("What is your intro?")
+					.setStyle(TextInputStyle.Paragraph)
+					.setValue(memberProfile.memberIntroDescription);
+				const headerInput = TextInputBuilder()
+					.setCustomId("headerInput")
+					.setLabel("What is your intro's header (small text above the title)?")
+					.setStyle(TextInputStyle.Paragraph)
+					.setValue(memberProfile.memberIntroHeader);
+				const footerInput = TextInputBuilder()
+					.setCustomId("footerInput")
+					.setLabel(
+						"What is your intro's footer (small your main intro + sections)?"
+					)
+					.setStyle(TextInputStyle.Paragraph)
+					.setValue(memberProfile.memberIntroFooter);
+
+				const nonPremiumMemberActions = new ActionRowBuilder().addComponents(
+					displayNameInput,
+					pronounsInput,
+					colorInput,
+					titleInput,
+					descInput,
+					headerInput,
+					footerInput
+				);
+				intromodal.addComponents(nonPremiumMemberActions);
 			}
 		} else if (memberORguild == "g") {
 			//Make guild display
