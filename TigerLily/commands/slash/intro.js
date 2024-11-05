@@ -163,7 +163,7 @@ module.exports = {
 
     function make_guild_display(diplay_card) {
       //Display the intro in its current state for an individal member
-      let title = `${guildProfile.guildDisplayName}*(${guildProfile.guildPronouns})* Intro!`;
+      let title = `${guildProfile.guildDisplayName} Intro!`;
       display_card
         .setDescription(guildProfile.guildIntroDescription)
         .setColor(guildProfile.guildIntroDisplayColor)
