@@ -22,8 +22,6 @@ let isCreating = false;
 let member_is_admin = false;
 let newmessage_string = "";
 
-//Make guild display
-
 // (currently a single command, make a button mene option)
 module.exports = {
   data: new SlashCommandBuilder()
@@ -52,24 +50,24 @@ module.exports = {
       memberId: interaction.user.id,
     });
     //Check Membeer IDs
-    if ((guildProfile.guildAdmimMemberIds).find(interaction.user.id))
+    if (guildProfile.guildAdmimMemberIds.find(interaction.user.id))
       member_is_admin = true;
-	//Check Role IDs
-	else {
-		for (let r in guildProfile.guildAdminRoleIds) {
-			if(interaction.member.roles.cache.has(r)) {
-				member_is_admin = true;
-				break;
-			}
-		}
-	}
+    //Check Role IDs
+    else {
+      for (let r in guildProfile.guildAdminRoleIds) {
+        if (interaction.member.roles.cache.has(r)) {
+          member_is_admin = true;
+          break;
+        }
+      }
+    }
 
     /*CREATION INTRO*/
     if (!memberProfile) {
       memberProfile = await new Member({
         _id: mongoose.Types.ObjectId(),
         memberId: interaction.user.id,
-        memberPremium: 0,
+        memberPremiumCount: 0,
       });
       await memberProfile.save().catch(console.error);
       isCreating = true;
@@ -96,6 +94,7 @@ module.exports = {
     }
 
     const hasPremium = memberProfile.memberPremiumCount > 0 ? true : false;
+	const hasSponser = guildProfile.guildSponserCount > 0 ? true : false;
 
     function make_display(diplay_card) {
       //Display the intro in its current state for an individal member
@@ -155,6 +154,71 @@ module.exports = {
         ) {
           display_card.setAuthor({
             iconURL: memberProfile.memberIntroHeaderIcon,
+          });
+        }
+      }
+      display_card.setTitle(title);
+      return display_card;
+    }
+
+    function make_guild_display(diplay_card) {
+      //Display the intro in its current state for an individal member
+      let title = `${guildProfile.guildDisplayName}*(${guildProfile.guildPronouns})* Intro!`;
+      display_card
+        .setDescription(guildProfile.guildIntroDescription)
+        .setColor(guildProfile.guildIntroDisplayColor)
+        .setThumbnail(guildProfile.guildIntroDisplayThumbnail);
+      if (hasSponser) {
+        if (guildProfile.guildIntroCustomTitle) {
+          title = guildProfile.guildIntroCustomTitle;
+        }
+        if (guildProfile.guildIntroDisplayBanner) {
+          display_card.setImage(guildProfile.guildIntroDisplayBanner);
+        }
+        if (
+          guildProfile.guildIntroFooter &&
+          guildProfile.guildIntroFooterIcon
+        ) {
+          display_card.setFooter({
+            iconURL: guildProfile.guildIntroFooterIcon,
+            text: guildProfile.guildIntroFooter,
+          });
+        } else if (
+          guildProfile.guildIntroFooter &&
+          !guildProfile.guildIntroFooterIcon
+        ) {
+          display_card.setFooter({
+            text: guildProfile.guildIntroFooter,
+          });
+        } else if (
+          !guildProfile.guildIntroFooter &&
+          guildProfile.guildIntroFooterIcon
+        ) {
+          display_card.setFooter({
+            iconURL: guildProfile.guildIntroFooterIcon,
+          });
+        }
+        if (
+          guildProfile.guildIntroHeader &&
+          guildProfile.guildIntroHeaderIcon
+        ) {
+          display_card.setAuthor({
+            iconURL: guildProfile.guildIntroHeaderIcon,
+            text: guildProfile.guildIntroHeader,
+          });
+        } else if (
+          guildProfile.guildIntroHeader &&
+          !guildProfile.guildIntroHeaderIcon
+        ) {
+          display_card.setAuthor({
+            text: guildProfile.guildIntroHeader,
+          });
+        } else if (
+          !guildProfile.guildIntroHeader &&
+          guildProfile.guildIntroHeaderIcon
+        ) {
+          display_card.setAuthor({
+            iconURL: guildProfile.guildIntroHeaderIcon,
           });
         }
       }
