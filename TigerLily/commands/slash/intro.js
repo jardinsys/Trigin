@@ -345,7 +345,7 @@ module.exports = {
 					.setStyle(TextInputStyle.Paragraph)
 					.setValue(memberProfile.memberIntroFooter);
 
-				const nonPremiumMemberActions = new ActionRowBuilder().addComponents(
+				const PremiumMemberActions = new ActionRowBuilder().addComponents(
 					displayNameInput,
 					pronounsInput,
 					colorInput,
@@ -354,8 +354,11 @@ module.exports = {
 					headerInput,
 					footerInput
 				);
-				intromodal.addComponents(nonPremiumMemberActions);
+				intromodal.addComponents(PremiumMemberActions);
 			}
+
+			//Add thumbnail
+			//for Premium, add thumbnail, banner, header icon, footer icon, and fields
 		} else if (memberORguild == "g") {
 			//Make guild display
 			//         - guildintrodisplay.js
