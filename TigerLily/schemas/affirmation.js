@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { mainDB } = require("../bot.js")
+const { mainDB } = require("../dbTigerConnections");
 const affirmationSchema = new Schema({
     _id: Schema.Types.ObjectId,
     affirmationId: Number,

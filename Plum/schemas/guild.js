@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { mainDB } = require("../bot.js")
+const { mainDB } = require("../dbPlumConnections");
 const guildSchema = new Schema({
     _id: Schema.Types.ObjectId,
     guildId: { type: String, required: true },

@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const { token, dbToken, sucreDBToken} = require('./config.json');
+const { token } = require('./config.json');
 const { connectToTigerDatabase, connectToSugarDatabase } = require('./dbTigerConnections');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 

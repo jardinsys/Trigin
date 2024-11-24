@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { sucreDB } = require("../bot.js");
+const { sucreDB } = require("../dbSugarConnections");
 const affirmationSchema = new Schema({
     _id: Schema.Types.ObjectId,
     affirmationId: Number,
