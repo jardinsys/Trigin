@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token, dbToken, sucreDBToken} = require('./config.json');
-const connect = require('mongoose');
+const { connectToTigerDatabase, connectToSugarDatabase } = require('./dbTigerConnections');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
@@ -27,19 +27,13 @@ for (const folder of commandFolders) {
 
 client.once(Events.ClientReady, c => {
 	console.log(`Ready to Roar! Logged in as ${c.user.tag}`);
+
+	//Log into DBs
+	connectToTigerDatabase;
+	connectToSugarDatabase;
 });
 
 client.login(token);
-
-//Log into DB's
-const mainDB = connect.createConnection(dbToken);
-const sucreDB = connect.createConnection(sucreDBToken);
-mainDB.on('error', (error) => {
-	console.error('Main DB connection error: ', error);
-});
-sucreDB.on('error', (error) => {
-	console.error('Sugar DB connection error: ', error);
-});
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
