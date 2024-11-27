@@ -7,9 +7,9 @@ const {
 	ModalBuilder,
 	TextInputBuilder,
 	TextInputStyle,
-	Guild,
 } = require("discord.js");
 const Member = require("../../schemas/member");
+const Guild = require("../../schemas/guild");
 const mongoose = require("mongoose");
 const {
 	trig_default_color,
@@ -97,71 +97,201 @@ module.exports = {
 		const hasPremium = memberProfile.memberPremiumCount > 0 ? true : false;
 		const hasSponser = guildProfile.guildSponserCount > 0 ? true : false;
 
-		function make_display(diplay_card) {
-			//Display the intro in its current state for an individal member
-			let title = `${memberProfile.memberDisplayName}*(${memberProfile.memberPronouns})* Intro!`;
-			display_card
-				.setDescription(memberProfile.memberIntroDescription)
-				.setColor(memberProfile.memberIntroDisplayColor)
-				.setThumbnail(memberProfile.memberIntroDisplayThumbnail);
-			if (hasPremium) {
-				if (memberProfile.memberIntroCustomTitle) {
-					title = memberProfile.memberIntroCustomTitle;
-				}
-				if (memberProfile.memberIntroDisplayBanner) {
-					display_card.setImage(memberProfile.memberIntroDisplayBanner);
-				}
-				if (
-					memberProfile.memberIntroFooter &&
-					memberProfile.memberIntroFooterIcon
-				) {
-					display_card.setFooter({
-						iconURL: memberProfile.memberIntroFooterIcon,
-						text: memberProfile.memberIntroFooter,
-					});
-				} else if (
-					memberProfile.memberIntroFooter &&
-					!memberProfile.memberIntroFooterIcon
-				) {
-					display_card.setFooter({
-						text: memberProfile.memberIntroFooter,
-					});
-				} else if (
-					!memberProfile.memberIntroFooter &&
-					memberProfile.memberIntroFooterIcon
-				) {
-					display_card.setFooter({
-						iconURL: memberProfile.memberIntroFooterIcon,
-					});
-				}
-				if (
-					memberProfile.memberIntroHeader &&
-					memberProfile.memberIntroHeaderIcon
-				) {
-					display_card.setAuthor({
-						iconURL: memberProfile.memberIntroHeaderIcon,
-						text: memberProfile.memberIntroHeader,
-					});
-				} else if (
-					memberProfile.memberIntroHeader &&
-					!memberProfile.memberIntroHeaderIcon
-				) {
-					display_card.setAuthor({
-						text: memberProfile.memberIntroHeader,
-					});
-				} else if (
-					!memberProfile.memberIntroHeader &&
-					memberProfile.memberIntroHeaderIcon
-				) {
-					display_card.setAuthor({
-						iconURL: memberProfile.memberIntroHeaderIcon,
-					});
-				}
-			}
-			display_card.setTitle(title);
-			return display_card;
+		if (display_on && !isCreating) {
+			//introdisplay.js
+			const display = new EmbedBuilder();
+			make_display(display);
+			message.channel.send({ embeds: [display] });
+			return;
 		}
 
+		/*EDITING m*/
+		if (memberORguild == "m") {
+			let mode = isCreating ? "create" : "edit";
+
+			let displayName = memberProfile.memberDisplayName;
+			let pronouns = memberProfile.memberPronouns;
+			let color = memberProfile.memberIntroDisplayColor;
+			let desc = memberProfile.memberIntroDescription;
+			let custom_title = memberProfile.memberIntroCustomTitle;
+			let header = memberProfile.memberIntroHeader;
+			let footer = memberProfile.memberIntroFooter;
+			let thumbnail = memberProfile.memberIntroDisplayThumbnail;
+			let banner = memberProfile.memberIntroDisplayBanner;
+			let header_icon = memberProfile.memberIntroHeaderIcon;
+			let footer_icon = memberProfile.memberIntroFooterIcon;
+
+			function make_display(diplay_card) {
+				//Display the intro in its current state for an individal member
+				let title = `${displayName}*(${pronouns})* Intro!`;
+				display_card
+					.setDescription(desc)
+					.setColor(color);
+				if (thumbnail)
+					display_card.setThumbnail(thumbnail);
+				if (hasPremium) {
+					if (custom_title) title = custom_title;
+					if (banner) display_card.setImage(banner);
+					if (footer && footer_icon) {
+						display_card.setFooter({
+							iconURL: footer_icon,
+							text: footer,
+						});
+					} else if (footer && !footer_icon) {
+						display_card.setFooter({
+							text: footer,
+						});
+					} else if (!footer && footer_icon) {
+						display_card.setFooter({
+							iconURL: footer_icon,
+						});
+					}
+
+					if (header && header_icon) {
+						display_card.setAuthor({
+							iconURL: header_icon,
+							text: header,
+						});
+					} else if (header && !header_icon) {
+						display_card.setAuthor({
+							text: header,
+						});
+					} else if (!header && header_icon) {
+						display_card.setAuthor({
+							iconURL: header_icon,
+						});
+					}
+				}
+				display_card.setTitle(title);
+				return display_card;
+			}
+
+			function make_form(intromodal) {
+				if (!hasPremium) {
+					const displayNameInput = TextInputBuilder()
+						.setCustomId("displayNameInput")
+						.setLabel("What is your name?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(displayName);
+					const pronounsInput = TextInputBuilder()
+						.setCustomId("pronounsInput")
+						.setLabel("What are your pronouns?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(pronouns);
+					const colorInput = TextInputBuilder()
+						.setCustomId("colorInput")
+						.setLabel("What color do you want your intro to be?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(color);
+					const descInput = TextInputBuilder()
+						.setCustomId("descInput")
+						.setLabel("What is your intro?")
+						.setStyle(TextInputStyle.Paragraph)
+						.setValue(desc);
+	
+					const nonPremiumMemberActions = new ActionRowBuilder().addComponents(
+						displayNameInput,
+						pronounsInput,
+						colorInput,
+						descInput
+					);
+					intromodal.addComponents(nonPremiumMemberActions);
+				} else {
+					const displayNameInput = TextInputBuilder()
+						.setCustomId("displayNameInput")
+						.setLabel("What is your name?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(displayName);
+					const pronounsInput = TextInputBuilder()
+						.setCustomId("pronounsInput")
+						.setLabel("What are your pronouns?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(pronouns);
+					const colorInput = TextInputBuilder()
+						.setCustomId("colorInput")
+						.setLabel("What color do you want your intro to be?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(color);
+					const titleInput = TextInputBuilder()
+						.setCustomId("titleInput")
+						.setLabel("What do you want your title to be?")
+						.setStyle(TextInputStyle.Short)
+						.setValue(custom_title);
+					const descInput = TextInputBuilder()
+						.setCustomId("descInput")
+						.setLabel("What is your intro?")
+						.setStyle(TextInputStyle.Paragraph)
+						.setValue(desc);
+					const headerInput = TextInputBuilder()
+						.setCustomId("headerInput")
+						.setLabel("What is your intro's header (small text above the title)?")
+						.setStyle(TextInputStyle.Paragraph)
+						.setValue(header);
+					const footerInput = TextInputBuilder()
+						.setCustomId("footerInput")
+						.setLabel("What is your intro's footer (small text below your main intro)?")
+						.setStyle(TextInputStyle.Paragraph)
+						.setValue(footer);
+	
+					const PremiumMemberActions = new ActionRowBuilder().addComponents(
+						displayNameInput,
+						pronounsInput,
+						colorInput,
+						titleInput,
+						descInput,
+						headerInput,
+						footerInput
+					);
+					intromodal.addComponents(PremiumMemberActions);
+				}
+			}
+
+			const intro_message = new EmbedBuilder()
+				.setTitle("Lets " + mode + " your intro!")
+				.setDescription(
+					`To ` + mode + ` your introduction, please use the buttons below!`
+				)
+				.setColor(trig_default_color)
+				.setThumbnail(trig_noting_thumbnail)
+				.setFooter({ text: "(affirmation goes here)" });
+
+			const intro_edit = new EmbedBuilder();
+			if (isCreating) {
+				intro_edit.setDescription(`*(You don't have an intro yet)*`);
+			} else {
+				make_display(intro_edit);
+			}
+
+			const editButton = new ButtonBuilder()
+				.setCustomId("edit")
+				.setLabel("Edit Intro")
+				.setStyle(ButtonStyle.Secondary);
+			const imageButton = new ButtonBuilder()
+				.setCustomId("images")
+				.setLabel("Upload Images")
+				.setStyle(ButtonStyle.Secondary);
+			const saveButton = new ButtonBuilder()
+				.setCustomId("save")
+				.setLabel("Save")
+				.setStyle(ButtonStyle.Primary);
+			const editActions = new ActionRowBuilder().addComponents(
+				editButton, imageButton, saveButton
+			);
+
+			const introEditor = await message.channel.send({
+				embeds: [intro_message, intro_edit],
+				components: [editActions],
+			});
+
+			const intromodal = new ModalBuilder()
+				.setCustomId("introModal")
+				.setTitle(`Your Intro!`);
+			make_form(intromodal);
+
+			//Add thumbnail
+			//for Premium, add thumbnail, banner, header icon, footer icon, and fields
+		} else if (memberORguild == "g") {
+			
 		function make_guild_display(diplay_card) {
 			//Display the intro in its current state for an individal member
 			let title = `${guildProfile.guildDisplayName} Intro!`;
@@ -227,142 +357,6 @@ module.exports = {
 			return display_card;
 		}
 
-		if (display_on && !isCreating) {
-			//introdisplay.js
-			const display = new EmbedBuilder();
-			make_display(display);
-			message.channel.send({ embeds: [display] });
-			return;
-		}
-
-		/*EDITING m*/
-		if (memberORguild == "m") {
-			let mode = isCreating ? "create" : "edit";
-
-			const intro_message = new EmbedBuilder()
-				.setTitle("Lets " + mode + " your intro!")
-				.setDescription(
-					`To ` + mode + ` your introduction, please use the buttons below!`
-				)
-				.setColor(trig_default_color)
-				.setThumbnail(trig_noting_thumbnail)
-				.setFooter({ text: "(affirmation goes here)" });
-
-			const intro_edit = new EmbedBuilder();
-			if (isCreating) {
-				intro_edit.setDescription(`*(You don't have an intro yet)*`);
-			} else {
-				make_display(intro_edit);
-			}
-
-			const editButton = new ButtonBuilder()
-				.setCustomId("edit")
-				.setLabel("Edit Intro")
-				.setStyle(ButtonStyle.Secondary);
-			const imageButton = new ButtonBuilder()
-				.setCustomId("images")
-				.setLabel("Upload Images")
-				.setStyle(ButtonStyle.Secondary);
-			const saveButton = new ButtonBuilder()
-				.setCustomId("save")
-				.setLabel("Save")
-				.setStyle(ButtonStyle.Primary);
-			const editActions = new ActionRowBuilder().addComponents(
-				editButton, imageButton, saveButton
-			);
-
-			const introEditor = await message.channel.send({
-				embeds: [intro_message, intro_edit],
-				components: [editActions],
-			});
-
-			const intromodal = new ModalBuilder()
-				.setCustomId("introModal")
-				.setTitle(`Your Intro!`);
-
-			if (!hasPremium) {
-				const displayNameInput = TextInputBuilder()
-					.setCustomId("displayNameInput")
-					.setLabel("What is your name?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberDisplayName);
-				const pronounsInput = TextInputBuilder()
-					.setCustomId("pronounsInput")
-					.setLabel("What are your pronouns?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberPronouns);
-				const colorInput = TextInputBuilder()
-					.setCustomId("colorInput")
-					.setLabel("What color do you want your intro to be?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberIntroDisplayColor);
-				const descInput = TextInputBuilder()
-					.setCustomId("descInput")
-					.setLabel("What is your intro?")
-					.setStyle(TextInputStyle.Paragraph)
-					.setValue(memberProfile.memberIntroDescription);
-
-				const nonPremiumMemberActions = new ActionRowBuilder().addComponents(
-					displayNameInput,
-					pronounsInput,
-					colorInput,
-					descInput
-				);
-				intromodal.addComponents(nonPremiumMemberActions);
-			} else {
-				const displayNameInput = TextInputBuilder()
-					.setCustomId("displayNameInput")
-					.setLabel("What is your name?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberDisplayName);
-				const pronounsInput = TextInputBuilder()
-					.setCustomId("pronounsInput")
-					.setLabel("What are your pronouns?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberPronouns);
-				const colorInput = TextInputBuilder()
-					.setCustomId("colorInput")
-					.setLabel("What color do you want your intro to be?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberIntroDisplayColor);
-				const titleInput = TextInputBuilder()
-					.setCustomId("titleInput")
-					.setLabel("What do you want your title to be?")
-					.setStyle(TextInputStyle.Short)
-					.setValue(memberProfile.memberIntroCustomTitle);
-				const descInput = TextInputBuilder()
-					.setCustomId("descInput")
-					.setLabel("What is your intro?")
-					.setStyle(TextInputStyle.Paragraph)
-					.setValue(memberProfile.memberIntroDescription);
-				const headerInput = TextInputBuilder()
-					.setCustomId("headerInput")
-					.setLabel("What is your intro's header (small text above the title)?")
-					.setStyle(TextInputStyle.Paragraph)
-					.setValue(memberProfile.memberIntroHeader);
-				const footerInput = TextInputBuilder()
-					.setCustomId("footerInput")
-					.setLabel(
-						"What is your intro's footer (small your main intro + sections)?"
-					)
-					.setStyle(TextInputStyle.Paragraph)
-					.setValue(memberProfile.memberIntroFooter);
-
-				const PremiumMemberActions = new ActionRowBuilder().addComponents(
-					displayNameInput,
-					pronounsInput,
-					colorInput,
-					titleInput,
-					descInput,
-					headerInput,
-					footerInput
-				);
-				intromodal.addComponents(PremiumMemberActions);
-			}
-
-			//Add thumbnail
-			//for Premium, add thumbnail, banner, header icon, footer icon, and fields
-		} else if (memberORguild == "g") {
 			//Make guild display
 			//         - guildintrodisplay.js
 		}
