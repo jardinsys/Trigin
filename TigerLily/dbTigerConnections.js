@@ -6,7 +6,7 @@ const TigerDBUrl = 'mongodb://localhost:27017';
 const TigerDBName = 'your_database_name';
 */
 let mainDB = null;
-let dbSug = null;
+let sucreDB = null;
 
 async function connectToTigerDatabase() {
     if (mainDB) return mainDB;
@@ -23,13 +23,13 @@ async function connectToTigerDatabase() {
 }
 
 async function connectToSugarDatabase() {
-    if (dbSug) return dbSug;
+    if (sucreDB) return sucreDB;
     
     try {
         const client = await MongoClient.connect(SugarDBUrl, { useNewUrlParser: true, useUnifiedTopology: true });
-        dbSug = client.db(SugarDBName);
+        sucreDB = client.db(SugarDBName);
         console.log('Connected Sugar to Sugar MongoDB');
-        return dbSug;
+        return sucreDB;
     } catch (error) {
         console.error('Failed to connect Sugar to Sugar MongoDB', error);
         process.exit(1);

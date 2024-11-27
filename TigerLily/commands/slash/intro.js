@@ -259,13 +259,16 @@ module.exports = {
 				.setCustomId("edit")
 				.setLabel("Edit Intro")
 				.setStyle(ButtonStyle.Secondary);
+			const imageButton = new ButtonBuilder()
+				.setCustomId("images")
+				.setLabel("Upload Images")
+				.setStyle(ButtonStyle.Secondary);
 			const saveButton = new ButtonBuilder()
 				.setCustomId("save")
 				.setLabel("Save")
 				.setStyle(ButtonStyle.Primary);
 			const editActions = new ActionRowBuilder().addComponents(
-				editButton,
-				saveButton
+				editButton, imageButton, saveButton
 			);
 
 			const introEditor = await message.channel.send({
