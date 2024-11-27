@@ -89,21 +89,13 @@ module.exports = {
 					iconURL: trig_happyhug_thumbnail,
 					text: "Nice to meet you and Stay Safe!",
 				});
-			message.channel.send({ embeds: [newuser_message] });
+			message.channel.send({ embeds: [newuser_message], ephemeral: hidden });
 			//Make Button Options for Guild or Individal option
 			//memberORguild = ?;
 		}
 
 		const hasPremium = memberProfile.memberPremiumCount > 0 ? true : false;
 		const hasSponser = guildProfile.guildSponserCount > 0 ? true : false;
-
-		if (display_on && !isCreating) {
-			//introdisplay.js
-			const display = new EmbedBuilder();
-			make_display(display);
-			message.channel.send({ embeds: [display] });
-			return;
-		}
 
 		/*EDITING m*/
 		if (memberORguild == "m") {
@@ -188,7 +180,7 @@ module.exports = {
 						.setLabel("What is your intro?")
 						.setStyle(TextInputStyle.Paragraph)
 						.setValue(desc);
-	
+
 					const nonPremiumMemberActions = new ActionRowBuilder().addComponents(
 						displayNameInput,
 						pronounsInput,
@@ -232,7 +224,7 @@ module.exports = {
 						.setLabel("What is your intro's footer (small text below your main intro)?")
 						.setStyle(TextInputStyle.Paragraph)
 						.setValue(footer);
-	
+
 					const PremiumMemberActions = new ActionRowBuilder().addComponents(
 						displayNameInput,
 						pronounsInput,
@@ -244,6 +236,15 @@ module.exports = {
 					);
 					intromodal.addComponents(PremiumMemberActions);
 				}
+			}
+
+			//Display Only
+			if (display_on && !isCreating) {
+				//introdisplay.js
+				const display = new EmbedBuilder();
+				make_display(display);
+				message.channel.send({ embeds: [display], ephemeral: hidden });
+				return;
 			}
 
 			const intro_message = new EmbedBuilder()
@@ -281,6 +282,7 @@ module.exports = {
 			const introEditor = await message.channel.send({
 				embeds: [intro_message, intro_edit],
 				components: [editActions],
+				ephemeral: hidden
 			});
 
 			const intromodal = new ModalBuilder()
@@ -288,74 +290,134 @@ module.exports = {
 				.setTitle(`Your Intro!`);
 			make_form(intromodal);
 
+
+			client.on('interactionCreate', async interaction => {
+				if (interaction.customId === 'edit') {
+					await interaction.showModal(intromodal);
+
+					client.on('interactionCreate', async interaction => {
+						if (!interaction.isModalSubmit()) return;
+
+						if (interaction.customId === 'introModal') {
+							displayName = interaction.field.getTextInputValue('displayNameInput');
+							pronouns = interaction.field.getTextInputValue('pronounsInput');
+							color = interaction.field.getTextInputValue('colorInput');
+							desc = interaction.field.getTextInputValue('descInput');
+
+							if (hasPremium) {
+								custom_title = interaction.field.getTextInputValue('titleInput');
+								header = interaction.field.getTextInputValue('headerInput');
+								footer = interaction.field.getTextInputValue('footerInput');
+							}
+
+							//Update display
+							make_display(intro_edit);
+							introEditor = await sentMessage.edit({
+								embeds: [intro_message, intro_edit],
+								components: [editActions],
+								ephemeral: hidden
+							});
+							//Update Modal
+							make_form(intromodal);
+						}
+					});
+				}
+
+				if (interaction.customId === 'images') { }
+
+				if (interaction === 'save') {
+					memberProfile.memberDisplayName = displayName;
+					memberProfile.memberPronouns = pronouns;
+					memberProfile.memberIntroDisplayColor = color;
+					memberProfile.memberIntroDescription = desc;
+					memberProfile.memberIntroCustomTitle = custom_title;
+					memberProfile.memberIntroHeader = header;
+					memberProfile.memberIntroFooter = footer;
+					memberProfile.memberIntroDisplayThumbnail = thumbnail;
+					memberProfile.memberIntroDisplayBanner = banner;
+					memberProfile.memberIntroHeaderIcon = header_icon;
+					memberProfile.memberIntroFooterIcon = footer_icon;
+
+					await memberProfile.save()
+						.then(() => {
+							console.log('Profile updated successfully!');
+						})
+						.catch(err => {
+							console.error('Error updating profile:', err);
+						});
+				}
+			});
+
 			//Add thumbnail
 			//for Premium, add thumbnail, banner, header icon, footer icon, and fields
+
+
 		} else if (memberORguild == "g") {
-			
-		function make_guild_display(diplay_card) {
-			//Display the intro in its current state for an individal member
-			let title = `${guildProfile.guildDisplayName} Intro!`;
-			display_card
-				.setDescription(guildProfile.guildIntroDescription)
-				.setColor(guildProfile.guildIntroDisplayColor)
-				.setThumbnail(guildProfile.guildIntroDisplayThumbnail);
-			if (hasSponser) {
-				if (guildProfile.guildIntroCustomTitle) {
-					title = guildProfile.guildIntroCustomTitle;
+
+			function make_guild_display(diplay_card) {
+				//Display the intro in its current state for an individal member
+				let title = `${guildProfile.guildDisplayName} Intro!`;
+				display_card
+					.setDescription(guildProfile.guildIntroDescription)
+					.setColor(guildProfile.guildIntroDisplayColor)
+					.setThumbnail(guildProfile.guildIntroDisplayThumbnail);
+				if (hasSponser) {
+					if (guildProfile.guildIntroCustomTitle) {
+						title = guildProfile.guildIntroCustomTitle;
+					}
+					if (guildProfile.guildIntroDisplayBanner) {
+						display_card.setImage(guildProfile.guildIntroDisplayBanner);
+					}
+					if (
+						guildProfile.guildIntroFooter &&
+						guildProfile.guildIntroFooterIcon
+					) {
+						display_card.setFooter({
+							iconURL: guildProfile.guildIntroFooterIcon,
+							text: guildProfile.guildIntroFooter,
+						});
+					} else if (
+						guildProfile.guildIntroFooter &&
+						!guildProfile.guildIntroFooterIcon
+					) {
+						display_card.setFooter({
+							text: guildProfile.guildIntroFooter,
+						});
+					} else if (
+						!guildProfile.guildIntroFooter &&
+						guildProfile.guildIntroFooterIcon
+					) {
+						display_card.setFooter({
+							iconURL: guildProfile.guildIntroFooterIcon,
+						});
+					}
+					if (
+						guildProfile.guildIntroHeader &&
+						guildProfile.guildIntroHeaderIcon
+					) {
+						display_card.setAuthor({
+							iconURL: guildProfile.guildIntroHeaderIcon,
+							text: guildProfile.guildIntroHeader,
+						});
+					} else if (
+						guildProfile.guildIntroHeader &&
+						!guildProfile.guildIntroHeaderIcon
+					) {
+						display_card.setAuthor({
+							text: guildProfile.guildIntroHeader,
+						});
+					} else if (
+						!guildProfile.guildIntroHeader &&
+						guildProfile.guildIntroHeaderIcon
+					) {
+						display_card.setAuthor({
+							iconURL: guildProfile.guildIntroHeaderIcon,
+						});
+					}
 				}
-				if (guildProfile.guildIntroDisplayBanner) {
-					display_card.setImage(guildProfile.guildIntroDisplayBanner);
-				}
-				if (
-					guildProfile.guildIntroFooter &&
-					guildProfile.guildIntroFooterIcon
-				) {
-					display_card.setFooter({
-						iconURL: guildProfile.guildIntroFooterIcon,
-						text: guildProfile.guildIntroFooter,
-					});
-				} else if (
-					guildProfile.guildIntroFooter &&
-					!guildProfile.guildIntroFooterIcon
-				) {
-					display_card.setFooter({
-						text: guildProfile.guildIntroFooter,
-					});
-				} else if (
-					!guildProfile.guildIntroFooter &&
-					guildProfile.guildIntroFooterIcon
-				) {
-					display_card.setFooter({
-						iconURL: guildProfile.guildIntroFooterIcon,
-					});
-				}
-				if (
-					guildProfile.guildIntroHeader &&
-					guildProfile.guildIntroHeaderIcon
-				) {
-					display_card.setAuthor({
-						iconURL: guildProfile.guildIntroHeaderIcon,
-						text: guildProfile.guildIntroHeader,
-					});
-				} else if (
-					guildProfile.guildIntroHeader &&
-					!guildProfile.guildIntroHeaderIcon
-				) {
-					display_card.setAuthor({
-						text: guildProfile.guildIntroHeader,
-					});
-				} else if (
-					!guildProfile.guildIntroHeader &&
-					guildProfile.guildIntroHeaderIcon
-				) {
-					display_card.setAuthor({
-						iconURL: guildProfile.guildIntroHeaderIcon,
-					});
-				}
+				display_card.setTitle(title);
+				return display_card;
 			}
-			display_card.setTitle(title);
-			return display_card;
-		}
 
 			//Make guild display
 			//         - guildintrodisplay.js
