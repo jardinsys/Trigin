@@ -290,7 +290,6 @@ module.exports = {
 				.setTitle(`Your Intro!`);
 			make_form(intromodal);
 
-
 			client.on('interactionCreate', async interaction => {
 				if (interaction.customId === 'edit') {
 					await interaction.showModal(intromodal);
@@ -323,7 +322,13 @@ module.exports = {
 					});
 				}
 
-				if (interaction.customId === 'images') { }
+				if (interaction.customId === 'images') {
+					//Add thumbnail
+
+					//for Premium, add thumbnail, banner, header icon, footer icon
+
+					// Call image schema
+				}
 
 				if (interaction === 'save') {
 					memberProfile.memberDisplayName = displayName;
@@ -347,9 +352,6 @@ module.exports = {
 						});
 				}
 			});
-
-			//Add thumbnail
-			//for Premium, add thumbnail, banner, header icon, footer icon, and fields
 
 
 		} else if (memberORguild == "g") {
