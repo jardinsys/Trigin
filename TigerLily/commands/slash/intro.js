@@ -44,14 +44,17 @@ module.exports = {
 		let display_on = interaction.options.getBoolean("display only");
 		let hidden = interaction.options.getBoolean("hidden");
 		//Check Admin in server
-		let guildProfile = await Guild.findOne({
+
+		const guildProfile = await Guild.findOne({
 			guildId: interaction.guild.id,
 		});
-		let memberProfile = await Member.findOne({
+		const memberProfile = await Member.findOne({
 			memberId: interaction.user.id,
 		});
 		//Check Membeer IDs
-		if (guildProfile.guildAdmimMemberIds.find(interaction.user.id))
+		if (interaction.member.permissions.has(PermissionFlagsBits.Administrator))
+			member_is_admin = true;
+		else if (guildProfile.guildAdmimMemberIds.find(interaction.user.id))
 			member_is_admin = true;
 		//Check Role IDs
 		else {
@@ -91,7 +94,27 @@ module.exports = {
 				});
 			message.channel.send({ embeds: [newuser_message], ephemeral: hidden });
 			//Make Button Options for Guild or Individal option
+			const memberOrGuild_message = new EmbedBuilder()
+				.setTitle('Hello bot admin')
+				.setDescription(`Do you want to edit your personal or the server's intro?`);
+			const memberButton = new ButtonBuilder()
+				.setCustomId("member")
+				.setLabel("Edit Personal Intro")
+				.setStyle(ButtonStyle.Secondary);
+			const imageButton = new ButtonBuilder()
+				.setCustomId("guild")
+				.setLabel("Edit Server Intro")
+				.setStyle(ButtonStyle.Secondary);
+			const mOgActions = new ActionRowBuilder().addComponents(memberButton, imageButton);
+
+			message.channel.send({ embeds: [memberOrGuild_message], components: [mOgActions], ephemeral: hidden });
 			//memberORguild = ?;
+			client.once('interactionCreate', async interaction => {
+				if (interaction.customId === 'member')
+					memberORguild = "m";
+				if (interaction.customId === 'guild')
+					memberORguild = "g";
+			});
 		}
 
 		const hasPremium = memberProfile.memberPremiumCount > 0 ? true : false;
