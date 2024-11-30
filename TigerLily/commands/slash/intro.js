@@ -93,6 +93,9 @@ module.exports = {
 					text: "Nice to meet you and Stay Safe!",
 				});
 			message.channel.send({ embeds: [newuser_message], ephemeral: hidden });
+		}
+
+		if (member_is_admin) {
 			//Make Button Options for Guild or Individal option
 			const memberOrGuild_message = new EmbedBuilder()
 				.setTitle('Hello bot admin')
