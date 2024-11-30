@@ -33,7 +33,7 @@ module.exports = {
 		.addBooleanOption((option) =>
 			option
 				.setName("display only")
-				.setDescription("Just display your personal intro, no editing")
+				.setDescription("Just displays the intro, no editing")
 		)
 		.addBooleanOption((option) =>
 			option
@@ -102,11 +102,11 @@ module.exports = {
 				.setDescription(`Do you want to edit your personal or the server's intro?`);
 			const memberButton = new ButtonBuilder()
 				.setCustomId("member")
-				.setLabel("Edit Personal Intro")
+				.setLabel("Edit or Display Personal Intro")
 				.setStyle(ButtonStyle.Secondary);
 			const imageButton = new ButtonBuilder()
 				.setCustomId("guild")
-				.setLabel("Edit Server Intro")
+				.setLabel("Edit or Display Server Intro")
 				.setStyle(ButtonStyle.Secondary);
 			const mOgActions = new ActionRowBuilder().addComponents(memberButton, imageButton);
 
