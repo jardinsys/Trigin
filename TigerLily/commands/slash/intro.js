@@ -450,5 +450,8 @@ module.exports = {
 			//Make guild display
 			//         - guildintrodisplay.js
 		}
+
+		//check premium
+		//check sponsor
 	},
 };
