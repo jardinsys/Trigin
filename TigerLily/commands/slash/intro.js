@@ -22,6 +22,7 @@ let isCreating = false;
 let member_is_admin = false;
 let newmessage_string = "";
 let memberORguild = "m";
+import {mOg} from '../internal/button_build';
 
 // (currently a single command, make a button mene option)
 module.exports = {
@@ -97,27 +98,7 @@ module.exports = {
 
 		if (member_is_admin) {
 			//Make Button Options for Guild or Individal option
-			const memberOrGuild_message = new EmbedBuilder()
-				.setTitle('Hello bot admin')
-				.setDescription(`Do you want to edit your personal or the server's intro?`);
-			const memberButton = new ButtonBuilder()
-				.setCustomId("member")
-				.setLabel("Edit or Display Personal Intro")
-				.setStyle(ButtonStyle.Secondary);
-			const imageButton = new ButtonBuilder()
-				.setCustomId("guild")
-				.setLabel("Edit or Display Server Intro")
-				.setStyle(ButtonStyle.Secondary);
-			const mOgActions = new ActionRowBuilder().addComponents(memberButton, imageButton);
-
-			message.channel.send({ embeds: [memberOrGuild_message], components: [mOgActions], ephemeral: hidden });
-			//memberORguild = ?;
-			client.once('interactionCreate', async interaction => {
-				if (interaction.customId === 'member')
-					memberORguild = "m";
-				if (interaction.customId === 'guild')
-					memberORguild = "g";
-			});
+			memberORguild = mOg("Intro");
 		}
 
 		const hasPremium = memberProfile.memberPremiumCount > 0 ? true : false;
