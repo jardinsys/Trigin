@@ -22,7 +22,7 @@ let isCreating = false;
 let member_is_admin = false;
 let newmessage_string = "";
 let memberORguild = "m";
-import {mOg} from '../internal/button_build';
+import { mOg } from '../internal/build';
 
 // (currently a single command, make a button mene option)
 module.exports = {
@@ -49,34 +49,23 @@ module.exports = {
 		const guildProfile = await Guild.findOne({
 			guildId: interaction.guild.id,
 		});
-		const memberProfile = await Member.findOne({
-			memberId: interaction.user.id,
-		});
-		//Check Membeer IDs
-		if (interaction.member.permissions.has(PermissionFlagsBits.Administrator))
-			member_is_admin = true;
-		else if (guildProfile.guildAdmimMemberIds.find(interaction.user.id))
-			member_is_admin = true;
-		//Check Role IDs
-		else {
-			for (let r in guildProfile.guildAdminRoleIds) {
-				if (interaction.member.roles.cache.has(r)) {
-					member_is_admin = true;
-					break;
-				}
-			}
-		}
 
-		/*CREATION INTRO*/
-		if(!guildProfile){
+		if (!guildProfile) {
 			guildProfile = await new Guild({
 				_id: mongoose.Types.ObjectId(),
 				guildId: interaction.guild.id,
 				guildSponserCount: 0,
-			  });
+			});
 		}
 		
-		if (!memberProfile) {
+		member_is_admin = int_member_is_admin(guildProfile);
+		
+		const memberProfile = await Member.findOne({
+			memberId: interaction.user.id,
+		});
+
+		/*CREATION INTRO*/
+				if (!memberProfile) {
 			memberProfile = await new Member({
 				_id: mongoose.Types.ObjectId(),
 				memberId: interaction.user.id,
@@ -269,7 +258,7 @@ module.exports = {
 				)
 				.setColor(trig_default_color)
 				.setThumbnail(trig_noting_thumbnail)
-				.setFooter({ text: "(affirmation goes here)" });
+				.setFooter({ text: "(Affirmation here)" });
 
 			const intro_edit = new EmbedBuilder();
 			if (isCreating) {
@@ -365,8 +354,13 @@ module.exports = {
 						.catch(err => {
 							console.error('Error updating profile:', err);
 						});
+
+					const save_message = new EmbedBuilder()
+						.setDescription("Use the command `/send` to send to a channel you want!")
+						.setFooter({ text: "(Affirmation here)" });
 				}
 			});
+
 
 
 		} else if (memberORguild == "g") {
