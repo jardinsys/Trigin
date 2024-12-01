@@ -453,5 +453,6 @@ module.exports = {
 
 		//check premium
 		//check sponsor
+		//check messages
 	},
 };
