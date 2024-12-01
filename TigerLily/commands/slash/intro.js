@@ -68,6 +68,14 @@ module.exports = {
 		}
 
 		/*CREATION INTRO*/
+		if(!guildProfile){
+			guildProfile = await new Guild({
+				_id: mongoose.Types.ObjectId(),
+				guildId: interaction.guild.id,
+				guildSponserCount: 0,
+			  });
+		}
+		
 		if (!memberProfile) {
 			memberProfile = await new Member({
 				_id: mongoose.Types.ObjectId(),
