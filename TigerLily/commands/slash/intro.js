@@ -22,7 +22,61 @@ let isCreating = false;
 let member_is_admin = false;
 let newmessage_string = "";
 let memberORguild = "m";
-import { mOg } from '../internal/build';
+
+let displayName = "";
+let pronouns = "";
+let color = "";
+let desc = "";
+let custom_title = "";
+let header = "";
+let footer = "";
+let thumbnail = "";
+let banner = "";
+let header_icon = "";
+let footer_icon = "";
+let title = "";
+
+import { mOg } from "../internal/build";
+
+function make_display(diplay_card) {
+	display_card.setDescription(desc).setColor(color);
+	if (thumbnail) display_card.setThumbnail(thumbnail);
+	if (hasPremium) {
+		if (custom_title) title = custom_title;
+		if (banner) display_card.setImage(banner);
+		if (footer && footer_icon) {
+			display_card.setFooter({
+				iconURL: footer_icon,
+				text: footer,
+			});
+		} else if (footer && !footer_icon) {
+			display_card.setFooter({
+				text: footer,
+			});
+		} else if (!footer && footer_icon) {
+			display_card.setFooter({
+				iconURL: footer_icon,
+			});
+		}
+
+		if (header && header_icon) {
+			display_card.setAuthor({
+				iconURL: header_icon,
+				text: header,
+			});
+		} else if (header && !header_icon) {
+			display_card.setAuthor({
+				text: header,
+			});
+		} else if (!header && header_icon) {
+			display_card.setAuthor({
+				iconURL: header_icon,
+			});
+		}
+	}
+	display_card.setTitle(title);
+	return display_card;
+}
 
 // (currently a single command, make a button mene option)
 module.exports = {
@@ -57,15 +111,15 @@ module.exports = {
 				guildSponserCount: 0,
 			});
 		}
-		
+
 		member_is_admin = int_member_is_admin(guildProfile);
-		
+
 		const memberProfile = await Member.findOne({
 			memberId: interaction.user.id,
 		});
 
 		/*CREATION INTRO*/
-				if (!memberProfile) {
+		if (!memberProfile) {
 			memberProfile = await new Member({
 				_id: mongoose.Types.ObjectId(),
 				memberId: interaction.user.id,
@@ -105,62 +159,18 @@ module.exports = {
 		if (memberORguild == "m") {
 			let mode = isCreating ? "create" : "edit";
 
-			let displayName = memberProfile.memberDisplayName;
-			let pronouns = memberProfile.memberPronouns;
-			let color = memberProfile.memberIntroDisplayColor;
-			let desc = memberProfile.memberIntroDescription;
-			let custom_title = memberProfile.memberIntroCustomTitle;
-			let header = memberProfile.memberIntroHeader;
-			let footer = memberProfile.memberIntroFooter;
-			let thumbnail = memberProfile.memberIntroDisplayThumbnail;
-			let banner = memberProfile.memberIntroDisplayBanner;
-			let header_icon = memberProfile.memberIntroHeaderIcon;
-			let footer_icon = memberProfile.memberIntroFooterIcon;
-
-			function make_display(diplay_card) {
-				//Display the intro in its current state for an individal member
-				let title = `${displayName}*(${pronouns})* Intro!`;
-				display_card
-					.setDescription(desc)
-					.setColor(color);
-				if (thumbnail)
-					display_card.setThumbnail(thumbnail);
-				if (hasPremium) {
-					if (custom_title) title = custom_title;
-					if (banner) display_card.setImage(banner);
-					if (footer && footer_icon) {
-						display_card.setFooter({
-							iconURL: footer_icon,
-							text: footer,
-						});
-					} else if (footer && !footer_icon) {
-						display_card.setFooter({
-							text: footer,
-						});
-					} else if (!footer && footer_icon) {
-						display_card.setFooter({
-							iconURL: footer_icon,
-						});
-					}
-
-					if (header && header_icon) {
-						display_card.setAuthor({
-							iconURL: header_icon,
-							text: header,
-						});
-					} else if (header && !header_icon) {
-						display_card.setAuthor({
-							text: header,
-						});
-					} else if (!header && header_icon) {
-						display_card.setAuthor({
-							iconURL: header_icon,
-						});
-					}
-				}
-				display_card.setTitle(title);
-				return display_card;
-			}
+			displayName = memberProfile.memberDisplayName;
+			pronouns = memberProfile.memberPronouns;
+			color = memberProfile.memberIntroDisplayColor;
+			desc = memberProfile.memberIntroDescription;
+			custom_title = memberProfile.memberIntroCustomTitle;
+			header = memberProfile.memberIntroHeader;
+			footer = memberProfile.memberIntroFooter;
+			thumbnail = memberProfile.memberIntroDisplayThumbnail;
+			banner = memberProfile.memberIntroDisplayBanner;
+			header_icon = memberProfile.memberIntroHeaderIcon;
+			footer_icon = memberProfile.memberIntroFooterIcon;
+			title = `${displayName}*(${pronouns})* Intro!`;
 
 			function make_form(intromodal) {
 				if (!hasPremium) {
@@ -220,12 +230,16 @@ module.exports = {
 						.setValue(desc);
 					const headerInput = TextInputBuilder()
 						.setCustomId("headerInput")
-						.setLabel("What is your intro's header (small text above the title)?")
+						.setLabel(
+							"What is your intro's header (small text above the title)?"
+						)
 						.setStyle(TextInputStyle.Paragraph)
 						.setValue(header);
 					const footerInput = TextInputBuilder()
 						.setCustomId("footerInput")
-						.setLabel("What is your intro's footer (small text below your main intro)?")
+						.setLabel(
+							"What is your intro's footer (small text below your main intro)?"
+						)
 						.setStyle(TextInputStyle.Paragraph)
 						.setValue(footer);
 
@@ -280,13 +294,15 @@ module.exports = {
 				.setLabel("Save")
 				.setStyle(ButtonStyle.Primary);
 			const editActions = new ActionRowBuilder().addComponents(
-				editButton, imageButton, saveButton
+				editButton,
+				imageButton,
+				saveButton
 			);
 
 			const introEditor = await message.channel.send({
 				embeds: [intro_message, intro_edit],
 				components: [editActions],
-				ephemeral: hidden
+				ephemeral: hidden,
 			});
 
 			const intromodal = new ModalBuilder()
@@ -294,23 +310,25 @@ module.exports = {
 				.setTitle(`Your Intro!`);
 			make_form(intromodal);
 
-			client.on('interactionCreate', async interaction => {
-				if (interaction.customId === 'edit') {
+			client.on("interactionCreate", async (interaction) => {
+				if (interaction.customId === "edit") {
 					await interaction.showModal(intromodal);
 
-					client.on('interactionCreate', async interaction => {
+					client.on("interactionCreate", async (interaction) => {
 						if (!interaction.isModalSubmit()) return;
 
-						if (interaction.customId === 'introModal') {
-							displayName = interaction.field.getTextInputValue('displayNameInput');
-							pronouns = interaction.field.getTextInputValue('pronounsInput');
-							color = interaction.field.getTextInputValue('colorInput');
-							desc = interaction.field.getTextInputValue('descInput');
+						if (interaction.customId === "introModal") {
+							displayName =
+								interaction.field.getTextInputValue("displayNameInput");
+							pronouns = interaction.field.getTextInputValue("pronounsInput");
+							color = interaction.field.getTextInputValue("colorInput");
+							desc = interaction.field.getTextInputValue("descInput");
 
 							if (hasPremium) {
-								custom_title = interaction.field.getTextInputValue('titleInput');
-								header = interaction.field.getTextInputValue('headerInput');
-								footer = interaction.field.getTextInputValue('footerInput');
+								custom_title =
+									interaction.field.getTextInputValue("titleInput");
+								header = interaction.field.getTextInputValue("headerInput");
+								footer = interaction.field.getTextInputValue("footerInput");
 							}
 
 							//Update display
@@ -318,7 +336,7 @@ module.exports = {
 							introEditor = await sentMessage.edit({
 								embeds: [intro_message, intro_edit],
 								components: [editActions],
-								ephemeral: hidden
+								ephemeral: hidden,
 							});
 							//Update Modal
 							make_form(intromodal);
@@ -326,15 +344,15 @@ module.exports = {
 					});
 				}
 
-				if (interaction.customId === 'images') {
+				if (interaction.customId === "images") {
 					//Add thumbnail
 
 					//for Premium, add thumbnail, banner, header icon, footer icon
-
+					
 					// Call image schema
 				}
 
-				if (interaction === 'save') {
+				if (interaction === "save") {
 					memberProfile.memberDisplayName = displayName;
 					memberProfile.memberPronouns = pronouns;
 					memberProfile.memberIntroDisplayColor = color;
@@ -347,88 +365,35 @@ module.exports = {
 					memberProfile.memberIntroHeaderIcon = header_icon;
 					memberProfile.memberIntroFooterIcon = footer_icon;
 
-					await memberProfile.save()
+					await memberProfile
+						.save()
 						.then(() => {
-							console.log('Profile updated successfully!');
+							console.log("Profile updated successfully!");
 						})
-						.catch(err => {
-							console.error('Error updating profile:', err);
+						.catch((err) => {
+							console.error("Error updating profile:", err);
 						});
 
 					const save_message = new EmbedBuilder()
-						.setDescription("Use the command `/send` to send to a channel you want!")
+						.setDescription(
+							"Use the command `/send` to send to a channel you want!"
+						)
 						.setFooter({ text: "(Affirmation here)" });
 				}
 			});
-
-
-
 		} else if (memberORguild == "g") {
 
-			function make_guild_display(diplay_card) {
-				//Display the intro in its current state for an individal member
-				let title = `${guildProfile.guildDisplayName} Intro!`;
-				display_card
-					.setDescription(guildProfile.guildIntroDescription)
-					.setColor(guildProfile.guildIntroDisplayColor)
-					.setThumbnail(guildProfile.guildIntroDisplayThumbnail);
-				if (hasSponser) {
-					if (guildProfile.guildIntroCustomTitle) {
-						title = guildProfile.guildIntroCustomTitle;
-					}
-					if (guildProfile.guildIntroDisplayBanner) {
-						display_card.setImage(guildProfile.guildIntroDisplayBanner);
-					}
-					if (
-						guildProfile.guildIntroFooter &&
-						guildProfile.guildIntroFooterIcon
-					) {
-						display_card.setFooter({
-							iconURL: guildProfile.guildIntroFooterIcon,
-							text: guildProfile.guildIntroFooter,
-						});
-					} else if (
-						guildProfile.guildIntroFooter &&
-						!guildProfile.guildIntroFooterIcon
-					) {
-						display_card.setFooter({
-							text: guildProfile.guildIntroFooter,
-						});
-					} else if (
-						!guildProfile.guildIntroFooter &&
-						guildProfile.guildIntroFooterIcon
-					) {
-						display_card.setFooter({
-							iconURL: guildProfile.guildIntroFooterIcon,
-						});
-					}
-					if (
-						guildProfile.guildIntroHeader &&
-						guildProfile.guildIntroHeaderIcon
-					) {
-						display_card.setAuthor({
-							iconURL: guildProfile.guildIntroHeaderIcon,
-							text: guildProfile.guildIntroHeader,
-						});
-					} else if (
-						guildProfile.guildIntroHeader &&
-						!guildProfile.guildIntroHeaderIcon
-					) {
-						display_card.setAuthor({
-							text: guildProfile.guildIntroHeader,
-						});
-					} else if (
-						!guildProfile.guildIntroHeader &&
-						guildProfile.guildIntroHeaderIcon
-					) {
-						display_card.setAuthor({
-							iconURL: guildProfile.guildIntroHeaderIcon,
-						});
-					}
-				}
-				display_card.setTitle(title);
-				return display_card;
-			}
+			displayName = guildProfile.guildDisplayName;
+			color = guildProfile.guildIntroDisplayColor;
+			desc = guildProfile.guildIntroDescription;
+			custom_title = guildProfile.guildIntroCustomTitle;
+			header = guildProfile.guildIntroHeader;
+			footer = guildProfile.guildIntroFooter;
+			thumbnail = guildProfile.guildIntroDisplayThumbnail;
+			banner = guildProfile.guildIntroDisplayBanner;
+			header_icon = guildProfile.guildIntroHeaderIcon;
+			footer_icon = guildProfile.guildIntroFooterIcon;
+			title = `${guildProfile.guildDisplayName} Intro!`;
 
 			//Make guild display
 			//         - guildintrodisplay.js
